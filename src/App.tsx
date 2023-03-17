@@ -1,6 +1,6 @@
 import React from 'react';
 import { ProductsList } from 'components/ProductsList';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import './App.css';
 import { AboutUsPage } from 'components/AboutUsPage';
 import { NotFoundPage } from 'components/NotFoundPage';
