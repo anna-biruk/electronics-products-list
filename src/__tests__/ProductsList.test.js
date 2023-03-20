@@ -21,7 +21,6 @@ describe('App', () => {
     render(<App />, { wrapper: BrowserRouter });
     const user = userEvent.setup();
 
-    // verify page content for expected route after navigating
     await user.click(screen.getByText(/about/i));
     expect(screen.getByText(/about us/i)).toBeInTheDocument();
   });

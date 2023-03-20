@@ -39,10 +39,7 @@ class NavItem extends Component<NavItemProps> {
   render() {
     const { label, ...rest } = this.props;
     return (
-      <NavLink
-        {...rest}
-        className={({ isActive }) => (isActive ? 'text-blue-500' : '')} // Conditionally add the text-blue-500 class to the active link
-      >
+      <NavLink {...rest} className={({ isActive }) => (isActive ? 'text-blue-500' : '')}>
         {label}
       </NavLink>
     );
