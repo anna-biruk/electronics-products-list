@@ -29,6 +29,7 @@ export class Header extends Component<Props> {
         <div className="flex justify-end gap-4">
           <NavItem to="/" label="Home" />
           <NavItem to="/about" label="About" />
+          <NavItem to="/forms" label="Forms" />
         </div>
       </nav>
     );

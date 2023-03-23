@@ -5,7 +5,7 @@ import App from '../App';
 import { ProductsList } from '../components/ProductsList';
 import userEvent from '@testing-library/user-event';
 import { BrowserRouter } from 'react-router-dom';
-import { NotFoundPage } from '../components/NotFoundPage';
+import { NotFoundPage } from '../components/pages/NotFoundPage';
 
 describe('App', () => {
   it('renders App component', () => {
