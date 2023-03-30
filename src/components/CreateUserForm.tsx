@@ -1,7 +1,6 @@
-import React, { Component, createRef, SyntheticEvent, RefObject } from 'react';
+import React, { useState } from 'react';
 import { UsersList } from './UsersList';
-import checkValidation from 'helpers/checkValidation';
-import getBase64 from 'helpers/getBase64';
+import { useForm, SubmitHandler } from 'react-hook-form';
 
 export type Item = {
   name: string;
@@ -12,186 +11,167 @@ export type Item = {
   file: string;
 };
 
-type State = {
-  items: Item[];
-  errors: Errors;
-};
-
 export type Errors = {
   [key: string]: string;
 };
-export class CreateUserForm extends Component<object, State> {
-  private nameRef: RefObject<HTMLInputElement>;
-  private dateRef: RefObject<HTMLInputElement>;
-  private selectRef: RefObject<HTMLSelectElement>;
-  private checkboxRef: RefObject<HTMLInputElement>;
-  private radioRef: RefObject<HTMLInputElement>;
-  private radioMale: RefObject<HTMLInputElement>;
-  private radioFemale: RefObject<HTMLInputElement>;
-  private fileRef: RefObject<HTMLInputElement>;
 
-  initialState = { name: '' };
-  state = {
-    items: [],
-    errors: {} as Errors,
-  };
-  constructor(props: object) {
-    super(props);
-    this.nameRef = createRef();
-    this.dateRef = createRef();
-    this.selectRef = createRef();
-    this.checkboxRef = createRef();
-    this.radioRef = createRef();
-    this.radioMale = createRef();
-    this.radioFemale = createRef();
-    this.fileRef = createRef();
-  }
+type Inputs = {
+  name: string;
+  date: string;
+  country: string;
+  consent: boolean;
+  gender: string;
+  file: string;
+};
 
-  handleSubmitForm = async (e: SyntheticEvent) => {
-    e.preventDefault();
-    const name = this.nameRef.current!.value;
-    const date = this.dateRef.current!.value;
-    const selectedIndex = this.selectRef.current!.selectedIndex;
-    const selectedCountry = this.selectRef.current!.options[selectedIndex].value;
-    const selectedRadio = this.radioMale.current!.checked
-      ? this.radioMale.current!.value
-      : this.radioFemale.current!.value;
-    const checkbox = this.checkboxRef.current!.checked;
-    const file = await getBase64(this.fileRef.current!.files);
+export const CreateUserForm = () => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm<Inputs>();
+  const [items, setItems] = useState<Inputs[]>([]);
+  const [successMessage, setSuccessMessage] = useState('');
+  const [base64File, setBase64File] = useState<string>('');
 
-    const [isValid, newErrors] = checkValidation(
-      name,
-      date,
-      selectedCountry,
-      this.radioMale.current!.checked,
-      this.radioFemale.current!.checked,
-      checkbox,
-      file
-    );
-    if (!isValid) {
-      this.setState({
-        errors: newErrors,
-      });
-    }
+  const handleFileInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    const reader = new FileReader();
 
-    const newItem = {
-      name: name,
-      date: date,
-      country: selectedCountry,
-      consent: checkbox,
-      gender: selectedRadio,
-      file: file,
+    reader.onloadend = () => {
+      const base64String = (reader.result as string).replace('data:', '').replace(/^.+,/, '');
+      setBase64File(base64String);
     };
-    if (isValid) {
-      this.setState((prevState) => {
-        return {
-          ...prevState,
-          items: [...prevState.items, newItem],
-          errors: { successful: 'Card created successful' },
-        };
-      });
+
+    if (file) {
+      reader.readAsDataURL(file);
     }
-    this.nameRef.current!.value = '';
-    this.dateRef.current!.value = '';
-    this.selectRef.current!.value = '';
-    this.checkboxRef.current!.checked = false;
-    this.fileRef.current!.value = '';
-    this.radioMale.current!.checked = false;
-    this.radioFemale.current!.checked = false;
   };
 
-  render() {
-    const { errors } = this.state;
-    return (
-      <div className="mb-4">
-        <form
-          className="w-full max-w-lg m-auto py-10 mt-10 px-10 border"
-          onSubmit={this.handleSubmitForm}
-        >
-          <h2 className="text-lg text-gray-800 font-medium mb-4 flex justify-center">
-            Create user card
-          </h2>
-          <label className="text-gray-600 font-medium"> Your Name:</label>
-          <input
-            ref={this.nameRef}
-            className="border-solid border-gray-300 border py-2 px-4 w-full rounded text-gray-700 mt-2"
-            name="name"
-            placeholder="Name"
-            autoFocus
-          />
-          {errors.name && <div className="text-red-600">{errors.name}</div>}
+  const onSubmit: SubmitHandler<Inputs> = async (data) => {
+    const newData = { ...data, file: `data:image/jpeg;base64,${base64File}` };
 
-          <label className="text-gray-600 font-medium">Date of birth:</label>
+    setItems((prevState) => {
+      return [...prevState, newData];
+    });
+    reset();
+    setSuccessMessage('Form submitted successfully!');
+    setTimeout(() => {
+      setSuccessMessage('');
+    }, 2000);
+  };
+
+  return (
+    <div className="mb-4">
+      <form
+        className="w-full max-w-lg m-auto py-10 mt-10 px-10 border"
+        onSubmit={handleSubmit(onSubmit)}
+        id="my-form"
+        data-testid
+      >
+        <h2 className="text-lg text-gray-800 font-medium mb-4 flex justify-center">
+          Create user card
+        </h2>
+        <label htmlFor="name-input" className="text-gray-600 font-medium">
+          {' '}
+          Your Name:
+        </label>
+        <input
+          {...register('name', { required: true, maxLength: 20 })}
+          className="border-solid border-gray-300 border py-2 px-4 w-full rounded text-gray-700 mt-2"
+          name="name"
+          id="name-input"
+          placeholder="Name"
+          autoFocus
+        />
+        {errors.name && <div className="text-red-600">Name field is required</div>}
+
+        <label htmlFor="date" className="text-gray-600 font-medium">
+          Date of birth:
+        </label>
+        <input
+          {...register('date', { required: true })}
+          type="date"
+          className="border-solid border-gray-300 border py-2 px-4 w-full rounded text-gray-700 mt-2"
+          name="date"
+          id="date"
+          placeholder="Date"
+          autoFocus
+        />
+        {errors.date && <div className="text-red-600">Date field is required</div>}
+        <label htmlFor="country-select" className="text-gray-600 font-medium mt-2">
+          Country:
+        </label>
+        <select
+          {...register('country', { required: true })}
+          className="border-solid border-gray-300 border py-2 px-4 w-full rounded text-gray-700 mt-2"
+          name="country"
+          id="country-select"
+          autoFocus
+        >
+          <option value="">Choose a country</option>
+          <option value="Belarus">Belarus</option>
+          <option value="Russia">Russia</option>
+          <option value="Poland">Poland</option>
+          <option value="Germany">Germany</option>
+        </select>
+        {errors.country && <div className="text-red-600">Country field is not selected</div>}
+        <div className="flex items-center mt-6">
           <input
-            ref={this.dateRef}
-            type="date"
-            className="border-solid border-gray-300 border py-2 px-4 w-full rounded text-gray-700 mt-2"
-            name="date"
-            placeholder="Date"
-            autoFocus
+            {...register('consent', { required: true })}
+            id="my-checkbox"
+            type="checkbox"
+            value=""
+            className="w-4 h-4 text-gray-700 bg-gray-100 border-gray-300 rounded focus:gray-500 dark:focus:gray-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
           />
-          {errors.date && <div className="text-red-600">{errors.date}</div>}
-          <label className="text-gray-600 font-medium mt-2">Country:</label>
-          <select
-            ref={this.selectRef}
-            className="border-solid border-gray-300 border py-2 px-4 w-full rounded text-gray-700 mt-2"
-            name="name"
-            placeholder="Name"
-            autoFocus
+          <label
+            htmlFor="my-checkbox"
+            className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300"
           >
-            <option value="">Choose a country</option>
-            <option value="Belarus">Belarus</option>
-            <option value="Russia">Russia</option>
-            <option value="Poland">Poland</option>
-            <option value="Germany">Germany</option>
-          </select>
-          {errors.country && <div className="text-red-600">{errors.country}</div>}
-          <div className="flex items-center mt-6">
+            I consent to my personal data
+          </label>
+        </div>
+        {errors.consent && <div className="text-red-600">Check the consent!</div>}
+        <div className="text-gray-600 font-medium mt-4">Choose a gender:</div>
+        <div className="flex gap-2 mt-2">
+          <label htmlFor="radio-one">
+            <input {...register('gender')} type="radio" name="gender" value="Male" id="radio-one" />
+            Male
+          </label>
+          <label htmlFor="radio-two">
             <input
-              ref={this.checkboxRef}
-              id="checked-checkbox"
-              type="checkbox"
-              value=""
-              className="w-4 h-4 text-gray-700 bg-gray-100 border-gray-300 rounded focus:gray-500 dark:focus:gray-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+              {...register('gender', { required: true })}
+              type="radio"
+              name="gender"
+              value="Female"
+              id="radio-two"
             />
-            <label className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">
-              I consent to my personal data
-            </label>
-          </div>
-          {errors.consent && <div className="text-red-600">{errors.consent}</div>}
-          <div className="text-gray-600 font-medium mt-4">Choose a gender:</div>
-          <div className="flex gap-2 mt-2">
-            <label htmlFor="radio-one">
-              <input ref={this.radioMale} type="radio" name="gender" value="Male" id="radio-one" />
-              Male
-            </label>
-            <label htmlFor="radio-two">
-              <input
-                ref={this.radioFemale}
-                type="radio"
-                name="gender"
-                value="Female"
-                id="radio-two"
-              />
-              Female
-            </label>
-          </div>
-          {errors.gender && <div className="text-red-600">{errors.gender}</div>}
-          <div className="mt-4">
-            <label className="text-gray-600 font-medium mt-2">Choose a profile picture:</label>
-            <input ref={this.fileRef} type="file" />
-          </div>
-          {errors.file && <div className="text-red-600">{errors.file}</div>}
-          {errors.successful && <div className="text-green-600">{errors.successful}</div>}
-          <button
-            className=" flex mt-4 w-[100px] bg-gray-600 hover:bg-gray-800 text-white border py-3 px-6 font-semibold text-md rounded mx-auto"
-            type="submit"
-          >
-            Submit
-          </button>
-        </form>
-        <UsersList items={this.state.items} />
-      </div>
-    );
-  }
-}
+            Female
+          </label>
+        </div>
+        {errors.gender && <div className="text-red-600">The gender field is not selected</div>}
+        <div className="mt-4">
+          <label htmlFor="file" className="text-gray-600 font-medium mt-2">
+            Choose a profile picture:
+          </label>
+          <input
+            {...register('file', { required: true })}
+            type="file"
+            id="file"
+            onChange={handleFileInputChange}
+          />
+        </div>
+        {errors.file && <div className="text-red-600">File is not uploaded</div>}
+        {successMessage && <div className="text-green-600">{successMessage}</div>}
+        <button
+          className=" flex mt-4 w-[100px] bg-gray-600 hover:bg-gray-800 text-white border py-3 px-6 font-semibold text-md rounded mx-auto"
+          type="submit"
+        >
+          Submit
+        </button>
+      </form>
+      <UsersList items={items} />
+    </div>
+  );
+};

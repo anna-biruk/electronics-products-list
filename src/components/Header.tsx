@@ -12,29 +12,26 @@ type Props = {
   handleSearchSubmit?: (event: React.SyntheticEvent) => void;
 };
 
-export class Header extends Component<Props> {
-  render() {
-    const { search, handleSearch, handleSearchSubmit } = this.props;
-    return (
-      <nav className="flex justify-between mr-10 text-xl h-[70px] items-center">
-        <div className="ml-20">
-          {handleSearch && search !== undefined && (
-            <SearchInput
-              handleSearch={handleSearch}
-              search={search}
-              handleSearchSubmit={handleSearchSubmit}
-            />
-          )}
-        </div>
-        <div className="flex justify-end gap-4">
-          <NavItem to="/" label="Home" />
-          <NavItem to="/about" label="About" />
-          <NavItem to="/forms" label="Forms" />
-        </div>
-      </nav>
-    );
-  }
-}
+export const Header = ({ search, handleSearch, handleSearchSubmit }: Props) => {
+  return (
+    <nav className="flex justify-between mr-10 text-xl h-[70px] items-center">
+      <div className="ml-20">
+        {handleSearch && search !== undefined && (
+          <SearchInput
+            handleSearch={handleSearch}
+            search={search}
+            handleSearchSubmit={handleSearchSubmit}
+          />
+        )}
+      </div>
+      <div className="flex justify-end gap-4">
+        <NavItem to="/" label="Home" />
+        <NavItem to="/about" label="About" />
+        <NavItem to="/forms" label="Forms" />
+      </div>
+    </nav>
+  );
+};
 
 class NavItem extends Component<NavItemProps> {
   render() {

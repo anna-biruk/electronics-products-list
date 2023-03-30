@@ -1,59 +1,41 @@
-import React, { Component } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Header } from './Header';
 import { Product, products } from '../data/products';
 import { ProductListItem } from './ProductListItem';
 
-type State = {
-  search: string;
-  filteredItems: Product[];
-  products: Product[];
-};
+export const ProductsList = () => {
+  const [search, setSearch] = useState(localStorage.getItem('search') || '');
+  const [filteredItems, setFilteredItems] = useState<Product[]>([]);
 
-type Props = object;
+  useEffect(() => {
+    const filteredItems = products.filter((item) => {
+      return item.title.toLowerCase().includes(search.toLowerCase());
+    });
+    setFilteredItems(filteredItems);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-export class ProductsList extends Component<Props, State> {
-  state = {
-    search: localStorage.getItem('search') || '',
-    filteredItems: products,
-    products,
-  };
-  componentDidMount() {
-    if (this.state.search) {
-      const filteredItems = products.filter((p: Product) =>
-        p.title.toLowerCase().includes(this.state.search.toLowerCase())
-      );
-      this.setState({ filteredItems });
-    }
-  }
-
-  handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState({ search: event.target.value });
+  const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearch(event.target.value);
   };
 
-  handleSearchSubmit = (event: React.SyntheticEvent) => {
+  const handleSearchSubmit = (event: React.SyntheticEvent) => {
     event.preventDefault();
     const result = products.filter((item) => {
-      return item.title.toLowerCase().includes(this.state.search.toLowerCase());
+      return item.title.toLowerCase().includes(search.toLowerCase());
     });
-    localStorage.setItem('search', this.state.search);
-    this.setState({ filteredItems: result });
+    localStorage.setItem('search', search);
+    setFilteredItems(result);
   };
 
-  render() {
-    const { search, filteredItems } = this.state;
-    return (
-      <div className="max-w-7xl mx-auto">
-        <Header
-          search={search}
-          handleSearch={this.handleSearch}
-          handleSearchSubmit={this.handleSearchSubmit}
-        />
-        <div className="grid grid-cols-4 auto-rows-[300px] gap-6 mt-10 lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1 sm:justify-items-center ">
-          {filteredItems.map((product: Product) => {
-            return <ProductListItem key={product.id} product={product} />;
-          })}
-        </div>
+  return (
+    <div className="max-w-7xl mx-auto">
+      <Header search={search} handleSearch={handleSearch} handleSearchSubmit={handleSearchSubmit} />
+      <div className="grid grid-cols-4 auto-rows-[300px] gap-6 mt-10 lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1 sm:justify-items-center ">
+        {filteredItems?.map((product: Product) => {
+          return <ProductListItem key={product.id} product={product} />;
+        })}
       </div>
-    );
-  }
-}
+    </div>
+  );
+};

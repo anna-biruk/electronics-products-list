@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import React from 'react';
 import { describe, expect } from '@jest/globals';
 import { render, screen } from '@testing-library/react';
@@ -29,5 +30,8 @@ describe('App', () => {
     render(<ProductsList />, { wrapper: BrowserRouter });
     expect(screen.getByText(/iphone 9/i)).toBeInTheDocument();
     expect(screen.getByText(/iphone x/i)).toBeInTheDocument();
+    expect(screen.getByText(/Samsung Universe 9/i)).toBeInTheDocument();
+    expect(screen.getByText(/OPPOF19/i)).toBeInTheDocument();
+    expect(screen.getByText(/Huawei P30/i)).toBeInTheDocument();
   });
 });
