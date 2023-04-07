@@ -1,6 +1,6 @@
 import React from 'react';
-import { Header } from '../Header';
-import { CreateUserForm } from '../CreateUserForm';
+import { Header } from '../components/Header';
+import { CreateUserForm } from '../components/CreateUserForm';
 
 const FormsPage = () => {
   return (

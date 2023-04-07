@@ -1,21 +1,9 @@
 import React, { useState } from 'react';
 import { UsersList } from './UsersList';
 import { useForm, SubmitHandler } from 'react-hook-form';
+import readFileAsBase64 from '../helpers/readFileBase64';
 
-export type Item = {
-  name: string;
-  date: string;
-  country: string;
-  consent: boolean;
-  gender: string;
-  file: string;
-};
-
-export type Errors = {
-  [key: string]: string;
-};
-
-type Inputs = {
+export type Inputs = {
   name: string;
   date: string;
   country: string;
@@ -35,22 +23,21 @@ export const CreateUserForm = () => {
   const [successMessage, setSuccessMessage] = useState('');
   const [base64File, setBase64File] = useState<string>('');
 
-  const handleFileInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    const reader = new FileReader();
-
-    reader.onloadend = () => {
-      const base64String = (reader.result as string).replace('data:', '').replace(/^.+,/, '');
-      setBase64File(base64String);
-    };
-
-    if (file) {
-      reader.readAsDataURL(file);
+  const handleFileInputChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    try {
+      if (!event.target.files) {
+        return null;
+      }
+      const file = event.target.files[0];
+      const base64 = await readFileAsBase64(file);
+      setBase64File(base64);
+    } catch (e) {
+      console.error(e);
     }
   };
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
-    const newData = { ...data, file: `data:image/jpeg;base64,${base64File}` };
+    const newData = { ...data, file: base64File };
 
     setItems((prevState) => {
       return [...prevState, newData];
@@ -86,7 +73,6 @@ export const CreateUserForm = () => {
           autoFocus
         />
         {errors.name && <div className="text-red-600">Name field is required</div>}
-
         <label htmlFor="date" className="text-gray-600 font-medium">
           Date of birth:
         </label>

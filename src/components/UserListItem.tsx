@@ -1,8 +1,8 @@
 import React from 'react';
-import { Item } from './CreateUserForm';
+import { Inputs } from './CreateUserForm';
 
 type Props = {
-  user: Item;
+  user: Inputs;
 };
 export const UserListItem = ({ user }: Props) => {
   return (

@@ -1,7 +1,7 @@
 import React from 'react';
 import { describe, expect } from '@jest/globals';
 import { render, screen, fireEvent } from '@testing-library/react';
-import FormsPage from '../components/pages/FormsPage';
+import FormsPage from '../pages/FormsPage';
 import readFileAsBase64 from '../helpers/readFileBase64';
 import { CreateUserForm } from '../components/CreateUserForm';
 import userEvent from '@testing-library/user-event';
@@ -49,7 +49,7 @@ describe('CreateUserForm', () => {
 
     const file = new File(['Hello, world!'], 'test.txt', { type: 'text/plain' });
     const base64 = await readFileAsBase64(file);
-    expect(base64).toEqual('SGVsbG8sIHdvcmxkIQ==');
+    expect(base64).toEqual('data:image/jpeg;base64,SGVsbG8sIHdvcmxkIQ==');
     fireEvent.change(getByLabelText('Choose a profile picture:'), { target: { files: [file] } });
     const user = userEvent.setup();
 
