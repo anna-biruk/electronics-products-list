@@ -6,7 +6,7 @@ import { CharactersListItem } from './CharactersListItem';
 import Spinner from './Spinner';
 
 export const CharactersList = () => {
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState(localStorage.getItem('search') || '');
   const [currentPage, setCurrentPage] = useState(1);
 
   const { characters, loading, error, setFetchParams } = useFetch(
@@ -34,6 +34,7 @@ export const CharactersList = () => {
       name: searchQuery,
     };
     setFetchParams(params);
+    localStorage.setItem('search', searchQuery);
   };
 
   return (
