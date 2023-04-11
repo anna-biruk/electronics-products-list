@@ -13,7 +13,7 @@ export const CharactersList = () => {
     `https://rickandmortyapi.com/api/character`,
     {
       page: 1,
-      name: '',
+      name: searchQuery,
     }
   );
 
