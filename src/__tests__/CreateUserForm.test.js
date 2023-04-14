@@ -7,14 +7,26 @@ import { CreateUserForm } from '../components/CreateUserForm';
 import userEvent from '@testing-library/user-event';
 import { BrowserRouter } from 'react-router-dom';
 import App from '../App';
+import { Provider } from 'react-redux';
+import { store } from '../app/store';
 
 describe('CreateUserForm', () => {
   it('renders CreateUserForm component', () => {
-    render(<FormsPage />, { wrapper: BrowserRouter });
+    render(
+      <Provider store={store}>
+        <FormsPage />
+      </Provider>,
+      { wrapper: BrowserRouter }
+    );
   });
 
   it('full app rendering/navigating', async () => {
-    render(<App />, { wrapper: BrowserRouter });
+    render(
+      <Provider store={store}>
+        <App />
+      </Provider>,
+      { wrapper: BrowserRouter }
+    );
     const user = userEvent.setup();
 
     await user.click(screen.getByText(/forms/i));
@@ -22,7 +34,13 @@ describe('CreateUserForm', () => {
   });
 
   it('displays error messages', async () => {
-    render(<CreateUserForm />, { wrapper: BrowserRouter });
+    render(
+      <Provider store={store}>
+        <CreateUserForm />
+      </Provider>,
+      { wrapper: BrowserRouter }
+    );
+
     const user = userEvent.setup();
 
     await user.click(screen.getByText(/submit/i));
@@ -34,7 +52,12 @@ describe('CreateUserForm', () => {
     expect(screen.getByText(/File is not uploaded/i)).toBeInTheDocument();
   });
   it('submits the form with user input', async () => {
-    const { getByLabelText } = render(<CreateUserForm />, { wrapper: BrowserRouter });
+    const { getByLabelText } = render(
+      <Provider store={store}>
+        <CreateUserForm />
+      </Provider>,
+      { wrapper: BrowserRouter }
+    );
 
     const nameInput = getByLabelText('Your Name:');
     fireEvent.change(nameInput, { target: { value: 'John Doe' } });

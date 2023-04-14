@@ -1,5 +1,5 @@
 import React from 'react';
-import { Character } from '../hooks/useFetch';
+import { Character } from '../features/charactersSlice';
 
 type Props = {
   onClose: () => void;
@@ -9,6 +9,7 @@ type Props = {
 const CardInformationModal = ({ onClose, character }: Props) => {
   return (
     <div
+      role="dialog"
       onClick={onClose}
       className="fixed flex justify-center items-center bg-white/70 left-0 right-0 bottom-0 top-0"
     >

@@ -8,7 +8,11 @@ type Props = {
 
 export const SearchInput = ({ search, handleSearch, handleSearchSubmit }: Props) => {
   return (
-    <form className="flex items-center justify-center" onSubmit={handleSearchSubmit}>
+    <form
+      className="flex items-center justify-center"
+      data-testid="search-form"
+      onSubmit={handleSearchSubmit}
+    >
       <label className="sr-only">Search</label>
       <div className="relative w-[300px]">
         <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">

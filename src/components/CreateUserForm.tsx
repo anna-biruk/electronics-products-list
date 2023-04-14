@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { UsersList } from './UsersList';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import readFileAsBase64 from '../helpers/readFileBase64';
+import { useDispatch, useSelector } from 'react-redux';
+import { addFormData, selectFormData } from 'features/charactersSlice';
 
 export type Inputs = {
   name: string;
@@ -19,9 +21,10 @@ export const CreateUserForm = () => {
     formState: { errors },
     reset,
   } = useForm<Inputs>();
-  const [items, setItems] = useState<Inputs[]>([]);
+  const dispatch = useDispatch();
   const [successMessage, setSuccessMessage] = useState('');
   const [base64File, setBase64File] = useState<string>('');
+  const formData = useSelector(selectFormData);
 
   const handleFileInputChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     try {
@@ -38,10 +41,7 @@ export const CreateUserForm = () => {
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     const newData = { ...data, file: base64File };
-
-    setItems((prevState) => {
-      return [...prevState, newData];
-    });
+    dispatch(addFormData(newData));
     reset();
     setSuccessMessage('Form submitted successfully!');
     setTimeout(() => {
@@ -157,7 +157,7 @@ export const CreateUserForm = () => {
           Submit
         </button>
       </form>
-      <UsersList items={items} />
+      <UsersList items={formData} />
     </div>
   );
 };

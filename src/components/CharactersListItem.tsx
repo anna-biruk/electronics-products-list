@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Character } from '../hooks/useFetch';
+import { Character } from '../features/charactersSlice';
 import { createPortal } from 'react-dom';
 import CardInformationModal from './CardInformationModal';
 

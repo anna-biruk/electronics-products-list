@@ -1,9 +1,10 @@
 import React from 'react';
 
-type Props = {
+export type Props = {
   handlePageChange: (pageNumber: number) => void;
   pageNumber: number;
 };
+
 const Pagination = ({ handlePageChange, pageNumber }: Props) => {
   return (
     <div className="flex flex-col items-center mt-3 mb-10">
