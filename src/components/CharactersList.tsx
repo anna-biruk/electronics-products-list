@@ -44,7 +44,6 @@ export const CharactersList = () => {
   const handlePageChange = (pageNumber: number) => {
     setCurrentPage(pageNumber);
     dispatch(fetchCharacters({ search: searchQuery, page: pageNumber }));
-    console.log('click');
   };
 
   const handleSearchSubmit = async (event: React.SyntheticEvent) => {
@@ -68,7 +67,7 @@ export const CharactersList = () => {
       {error && <div className="text-red-400 flex justify-center font-semibold">{error}</div>}
       {!error && characters && (
         <>
-          <div className=" mb-10 grid grid-cols-4 auto-rows-[300px] gap-6 mt-10 lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1 sm:justify-items-center ">
+          <div className="mb-10 grid grid-cols-4 auto-rows-[300px] gap-6 mt-10 sm:grid-cols-2 sm:justify-items-center md:grid-cols-3">
             {characters?.map((character: Character) => {
               return <CharactersListItem key={character.id} character={character} />;
             })}

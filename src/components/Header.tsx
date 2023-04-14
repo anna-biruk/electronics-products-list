@@ -14,7 +14,7 @@ type Props = {
 
 export const Header = ({ search, handleSearch, handleSearchSubmit }: Props) => {
   return (
-    <nav className="flex justify-between mr-10 text-xl h-[70px] items-center">
+    <nav className="flex justify-between mr-10 text-xl h-[70px] items-center sm:flex-wrap sm:justify-center">
       <div className="ml-20">
         {handleSearch && search !== undefined && (
           <SearchInput
@@ -24,7 +24,7 @@ export const Header = ({ search, handleSearch, handleSearchSubmit }: Props) => {
           />
         )}
       </div>
-      <div className="flex justify-end gap-4">
+      <div className="flex justify-end gap-4 ">
         <NavItem to="/" label="Home" />
         <NavItem to="/about" label="About" />
         <NavItem to="/forms" label="Forms" />
